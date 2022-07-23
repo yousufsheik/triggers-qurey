@@ -1,0 +1,82 @@
+use June1
+create  table Projct
+(PId int primary key,
+P_name varchar(30),
+P_Salary int)
+
+
+
+create table Projct_back_up
+(P_Id int ,
+P_name varchar(30),
+P_Salary varchar(40),
+Audit_type varchar(Max),
+Audit_time datetime,
+)
+
+--inserted  triggers
+create trigger insert1_triggers
+on Projct
+after insert
+as
+declare @id int;
+declare @name varchar(30);
+declare @salary int;
+declare @audit_type varchar(100);
+select @id =PId from inserted;
+select @name=P_name from inserted;
+select @salary=P_Salary from inserted;
+set @audit_type='insert recored -- After Insert triggers';
+insert into Projct_back_up (P_Id,P_name,P_Salary,Audit_type,Audit_time) values (@id,@name,@salary,@audit_type,getdate());
+print 'After insert triggers fired'
+
+insert into Projct values (2,'Ali',5500)
+
+select * from Projct_back_up
+
+select * from Projct
+
+--Updated  triggers
+create trigger Updated_trigerrs
+on Projct
+after update
+as
+declare @id int;
+declare @name varchar(30);
+declare @salary int;
+declare @audit_type varchar(100);
+select @id = PId from inserted;
+select @name =P_name from inserted;
+select @salary =P_Salary from inserted;
+if update(P_name) 
+set @audit_type='Update recored -- After Update triggers....';
+if update (P_Salary)set @audit_type='Emp_Salary Update after triggers';
+insert into Projct_back_up values (@id,@name,@salary,@audit_type,getdate());
+print 'After updated triggers fired'
+
+update  Projct set P_name='Alisha'  where PId = 2 
+
+select * from Projct_back_up
+select * from Projct
+
+--triggers After deleted
+create trigger delete_triggers 
+on Projct
+after delete
+as
+declare @id int ;
+declare @name varchar(30);
+declare @salary int;
+declare @audit_type varchar(100);
+select @id= PId from deleted;
+select @name = P_name from deleted;
+select @salary =P_Salary from deleted;
+set @audit_type='data has been deleted ';
+insert into Projct_back_up values(@id,@name,@salary,@audit_type,getdate());
+print 'data has deleted'
+
+delete Projct where PId= 2
+select * from Projct_back_up
+select * from Projct
+insert into Projct values(5,'Anabia', 34000)
+update Projct  set P_Salary=32000  where PId=4
